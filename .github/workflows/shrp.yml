@@ -111,17 +111,23 @@ jobs:
         repo sync -c -j$(nproc --all) -f --force-sync --no-clone-bundle --no-tags
         ls -al
 
-    - name: Patch SHRP vendor
-      run: |
-        PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
-        sed -i -e 's/SHRP_BUILD_DATE/(date +%Y%m%d)/g' vendor/shrp/shrp_final.sh
-
     - name: Clone device
       run: |
         PATH=~/bin:$PATH
         cd ${{ steps.pwd.outputs.pwd }}
         git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+
+    - name: Clone LineageOS/android_hardware_samsung
+      run: |
+        PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
+
+    - name: Patch SHRP vendor
+      run: |
+        PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        sed -i -e 's/SHRP_BUILD_DATE/(date +%Y%m%d)/g' vendor/shrp/shrp_final.sh
 
     - name: Building
       run: |
@@ -132,7 +138,7 @@ jobs:
         source build/envsetup.sh
         lunch ${{ github.event.inputs.LIBRARY_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng 
         make clean
-        make recoveryimage -j$(nproc --all)        
+        mka recoveryimage
       
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
