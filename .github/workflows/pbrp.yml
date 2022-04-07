@@ -112,7 +112,7 @@ jobs:
         cd ${{ steps.pwd.outputs.pwd }}
         git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
 
-    - name : omni_a9y18qlte.mk: vendor/omni -> vendor/pb
+    - name : Patch device tree: vendor/omni -> vendor/pb
       run: |
         cd ${{ github.event.inputs.DEVICE_PATH }}
         sed -i -e 's/vendor\/omni/vendor\/pb/g' omni_a9y18qlte.mk
