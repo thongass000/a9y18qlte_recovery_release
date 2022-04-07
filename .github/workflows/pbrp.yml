@@ -114,6 +114,7 @@ jobs:
 
     - name : Patch device tree
       run: |
+        cd ${{ steps.pwd.outputs.pwd }}
         cd ${{ github.event.inputs.DEVICE_PATH }}
         sed -i -e 's/vendor\/omni/vendor\/pb/g' omni_a9y18qlte.mk
         sed -i '/gsm.mk/d' omni_a9y18qlte.mk
