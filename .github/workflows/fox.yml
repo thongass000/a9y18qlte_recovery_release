@@ -1,0 +1,144 @@
+name: Build OrangeFox Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      RECOVERY_NAME:
+        description: 'RECOVERY_NAME'
+        required: true
+        default: 'OrangeFox'
+      LIBRARY_NAME:
+        description: 'LIBRARY_NAME'
+        required: true
+        default: 'omni'
+      DEVICE_URL:
+        description: 'DEVICE_URL'
+        required: true
+        default: 'https://github.com/thongass000/android_recovery_samsung_a9y18qlte.git'
+      DEVICE_BRANCH:
+        description: 'DEVICE_BRANCH'
+        required: true
+        default: 'fox_9.0'
+      DEVICE_PATH:
+        description: 'DEVICE_PATH'
+        required: true
+        default: 'device/samsung/a9y18qlte'
+      DEVICE_NAME:
+        description: 'DEVICE_NAME'
+        required: true
+        default: 'a9y18qlte'
+
+jobs:
+  build:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - name: Check Out
+      uses: actions/checkout@main
+      
+    - name: Remove useless package
+      run: |
+        docker rmi `docker images -q`
+        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
+        sudo apt -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php*
+        sudo apt -y autoremove --purge
+        sudo apt -y autoclean
+        sudo apt clean
+        sudo apt update
+        sudo apt -y upgrade
+
+    - name: Maximize and mount build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 1024
+        swap-size-mb: 6144
+        remove-dotnet: 'true'
+        temp-reserve-mb: 1024
+        remove-android: 'true'
+        remove-haskell: 'true'
+
+    - name: Get current date
+      run: |
+        echo "::set-output name=date::$(date +%Y-%m-%d)"
+      id: date
+    
+    - name: Get build machine info
+      run: |
+        sudo apt install -y neofetch
+        neofetch
+
+    - name: Prepare environment
+      run: |
+        export HOME=${GITHUB_WORKSPACE}
+        cd ${GITHUB_WORKSPACE}
+        sudo apt -y install git aria2 
+        git clone https://gitlab.com/OrangeFox/misc/scripts
+        cd scripts
+        sudo bash setup/android_build_env.sh
+        sudo bash setup/install_android_sdk.sh || true
+      
+    - name: Install repo
+      run: |
+        mkdir ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        export PATH=~/bin:$PATH
+      
+    - name: Initialize repo
+      run: |
+        PATH=~/bin:$PATH
+        mkdir workspace
+        cd workspace
+        echo "::set-output name=pwd::$(pwd)"
+        git config --global user.name "thongass000"
+        git config --global user.email "tienthong2004@gmail.com"
+      id: pwd
+          
+    - name: Repo Sync
+      run: |
+        PATH=~/bin:$PATH
+        mkdir ~/OrangeFox_sync
+        cd ~/OrangeFox_sync
+        git clone https://gitlab.com/OrangeFox/sync.git
+        cd ~/OrangeFox_sync/sync/
+        ./orangefox_sync.sh --branch 9.0 --path ${{ steps.pwd.outputs.pwd }}
+        cd ${{ steps.pwd.outputs.pwd }}
+        ls -al
+
+    - name: Clone device
+      run: |
+        PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+
+    - name: Patch OrangeFox vendor
+      run: |
+        PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        cd vendor/recovery
+        curl https://raw.githubusercontent.com/thongass000/android_recovery_samsung_a9y18qlte/patches/Do-not-include-Samsung-.tar-into-final-.zip-file.patch | git am
+
+    - name: Building
+      run: |
+        PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        export ALLOW_MISSING_DEPENDENCIES=true
+        export LC_ALL=C
+        source build/envsetup.sh
+        lunch ${{ github.event.inputs.LIBRARY_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng 
+        make clean
+        mka recoveryimage
+      
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img
+          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.tar
+          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
+        name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.date }}
+        tag_name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.date }}
+        body: ${{ github.event.inputs.RECOVERY_NAME }} recovery for ${{ github.event.inputs.DEVICE_NAME }}, built on ${{ steps.date.outputs.date }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
