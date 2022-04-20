@@ -131,7 +131,7 @@ jobs:
 
     - name: Getting latest Magisk Stable
       run: |
-	PATH=~/bin:$PATH
+        PATH=~/bin:$PATH
         cd ${{ steps.pwd.outputs.pwd }}
         bash ${GITHUB_WORKSPACE}/magisk.sh
 
