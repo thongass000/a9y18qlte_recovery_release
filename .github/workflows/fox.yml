@@ -1,3 +1,4 @@
+
 name: Build OrangeFox Recovery
 
 on:
@@ -118,6 +119,12 @@ jobs:
         cd ${{ steps.pwd.outputs.pwd }}
         cd vendor/recovery
         curl https://raw.githubusercontent.com/thongass000/android_recovery_samsung_a9y18qlte/patches/Do-not-include-Samsung-.tar-into-final-.zip-file.patch | git am
+
+    - name: Getting latest Magisk Stable
+      run: |
+	PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        bash ${GITHUB_WORKSPACE}/magisk.sh
 
     - name: Building
       run: |

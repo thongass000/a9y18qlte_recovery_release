@@ -123,11 +123,17 @@ jobs:
         cd ${{ steps.pwd.outputs.pwd }}
         git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
 
-    - name: Patch SHRP vendor
+    - name: Specify build date in build version
       run: |
         PATH=~/bin:$PATH
         cd ${{ steps.pwd.outputs.pwd }}
         sed -i -e 's/SHRP_BUILD_DATE/(date +%Y%m%d)/g' vendor/shrp/shrp_final.sh
+
+    - name: Getting latest Magisk Stable
+      run: |
+	PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        bash ${GITHUB_WORKSPACE}/magisk.sh
 
     - name: Building
       run: |
