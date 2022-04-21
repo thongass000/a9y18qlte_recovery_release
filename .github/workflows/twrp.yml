@@ -121,7 +121,10 @@ jobs:
         source build/envsetup.sh
         lunch ${{ github.event.inputs.LIBRARY_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng 
         make clean
-        make recoveryimage -j$(nproc --all)        
+        make recoveryimage -j$(nproc --all)
+        echo -e "-- Creating Odin flashable recovery tar (recovery.tar) ... "
+        outdir=workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}
+        tar -C $outdir -H ustar -c recovery.img > $outdir/TWRP-Unofficial-${{ steps.date.outputs.date }}.tar
       
     - name: Upload to Release
       uses: softprops/action-gh-release@v1

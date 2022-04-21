@@ -134,8 +134,12 @@ jobs:
         source build/envsetup.sh
         lunch ${{ github.event.inputs.LIBRARY_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng 
         make clean
-        make recoveryimage -j$(nproc --all)        
-      
+        make recoveryimage -j$(nproc --all)
+        echo -e "-- Creating Odin flashable recovery tar (recovery.tar) ... "
+        outdir=workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}
+        zipname=$outdir/$(find $outdir -name "*.zip" -exec basename \{} .zip \;)
+        tar -C workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }} -H ustar -c recovery.img > $zipname.tar
+
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
