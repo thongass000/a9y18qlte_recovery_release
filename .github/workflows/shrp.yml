@@ -1,3 +1,4 @@
+
 name: Build SHRP Recovery
 
 on:
@@ -128,6 +129,14 @@ jobs:
         PATH=~/bin:$PATH
         cd ${{ steps.pwd.outputs.pwd }}
         sed -i -e 's/SHRP_BUILD_DATE/(date +%Y%m%d)/g' vendor/shrp/shrp_final.sh
+
+    - name: Getting latest Magisk (Stable)
+      run: |
+        PATH=~/bin:$PATH
+        RECOVERY=${{ github.event.inputs.RECOVERY_NAME }}
+        cd ${{ steps.pwd.outputs.pwd }}
+        wget https://raw.githubusercontent.com/thongass000/android_recovery_samsung_a9y18qlte/patches/magisk.sh
+        chmod a+x magisk.sh && bash magisk.sh
 
     - name: Building
       run: |
