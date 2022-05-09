@@ -136,9 +136,10 @@ jobs:
         make clean
         make recoveryimage -j$(nproc --all)
         echo -e "-- Creating Odin flashable recovery tar (recovery.tar) ... "
-        tar -C $outdir -H ustar -c recovery.img > $outdir/$(find $outdir -name "*.zip" -exec basename \{} .zip \;).tar
+        tar -C $outdir -H ustar -c recovery.img > $outdir/$zipname.tar
       env:
         outdir: out/target/product/${{ github.event.inputs.DEVICE_NAME }}
+        zipname: $(find $outdir -name "*.zip" -exec basename \{} .zip \;)
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
