@@ -98,6 +98,10 @@ jobs:
         PATH=~/bin:$PATH
         cd ${{ steps.pwd.outputs.pwd }}
         git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+    
+    - name: Installing python2 for legacy builds
+      run: |
+        sudo apt-get install python2 python-is-python2
 
     - name: Building
       run: |
