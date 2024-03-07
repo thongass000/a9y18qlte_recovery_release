@@ -47,7 +47,7 @@ jobs:
 
     - name: Get current date
       run: |
-        echo "::set-output name=date::$(date +%Y-%m-%d)"
+        echo "{name}={$(date +%Y-%m-%d)}" >> $GITHUB_OUTPUT
       id: date
 
     - name: Get build machine info
@@ -77,7 +77,7 @@ jobs:
         PATH=~/bin:$PATH
         mkdir workspace
         cd workspace
-        echo "::set-output name=pwd::$(pwd)"
+        echo "{name}={$(pwd)}" >> $GITHUB_OUTPUT
         git config --global user.name "thongass000"
         git config --global user.email "tienthong2004@gmail.com"
       id: pwd
