@@ -104,7 +104,6 @@ jobs:
         cd ${{ steps.pwd.outputs.pwd }}
         git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
 
-
     - name: Clone device
       run: |
         PATH=~/bin:$PATH
@@ -129,6 +128,10 @@ jobs:
         cd ${{ steps.pwd.outputs.pwd }}
         wget https://raw.githubusercontent.com/thongass000/android_recovery_samsung_a9y18qlte/patches/magisk.sh
         chmod a+x magisk.sh && bash magisk.sh ${{ github.event.inputs.RECOVERY_NAME }}
+
+    - name: Installing python2 for legacy builds
+      run: |
+        sudo apt-get install python2 python-is-python2
 
     - name: Building
       run: |
