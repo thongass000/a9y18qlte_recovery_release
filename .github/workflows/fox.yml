@@ -88,8 +88,8 @@ jobs:
         mkdir ~/OrangeFox_sync
         cd ~/OrangeFox_sync
         git clone https://gitlab.com/OrangeFox/sync.git
-        cd ~/OrangeFox_sync/sync/
-        ./orangefox_sync.sh --branch 9.0 --path ${{ steps.pwd.outputs.pwd }}
+        cd ~/OrangeFox_sync/sync/legacy
+        ./orangefox_sync_legacy.sh --branch 9.0 --path ${{ steps.pwd.outputs.pwd }}
         cd ${{ steps.pwd.outputs.pwd }}
         ls -al
 
