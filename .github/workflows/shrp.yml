@@ -108,12 +108,6 @@ jobs:
         cd workspace
         git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
 
-    - name: Clone LineageOS/android_hardware_samsung
-      run: |
-        PATH=~/bin:$PATH
-        cd workspace
-        git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
-
     - name: Patch SHRP vendor
       run: |
         PATH=~/bin:$PATH
