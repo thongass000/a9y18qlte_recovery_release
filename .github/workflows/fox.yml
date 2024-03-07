@@ -93,6 +93,12 @@ jobs:
         cd ${{ steps.pwd.outputs.pwd }}
         ls -al
 
+    - name: Clone Samsung hardware repo
+      run: |
+        PATH=~/bin:$PATH
+        cd ${{ steps.pwd.outputs.pwd }}
+        git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
+
     - name: Clone device
       run: |
         PATH=~/bin:$PATH

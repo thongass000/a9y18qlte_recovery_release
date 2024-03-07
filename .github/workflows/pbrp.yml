@@ -93,7 +93,7 @@ jobs:
         repo sync -j$(nproc --all) -f --force-sync
         ls -al
 
-    - name: Clone LineageOS/android_hardware_samsung
+    - name: Clone Samsung hardware repo
       run: |
         PATH=~/bin:$PATH
         cd ${{ steps.pwd.outputs.pwd }}
