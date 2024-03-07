@@ -85,47 +85,45 @@ jobs:
         PATH=~/bin:$PATH
         mkdir workspace
         cd workspace
-        echo "{name}={$(pwd)}" >> $GITHUB_OUTPUT
         git config --global user.name "thongass000"
         git config --global user.email "tienthong2004@gmail.com"
         repo init --depth=1 -u ${{ github.event.inputs.LIBRARY_URL }} -b ${{ github.event.inputs.LIBRARY_BRANCH }}
-      id: pwd
 
     - name: Repo Sync
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         repo sync -c -j$(nproc --all) -f --force-sync --no-clone-bundle --no-tags
         ls -al
 
     - name: Clone Samsung hardware repo
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
 
     - name: Clone device
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Clone LineageOS/android_hardware_samsung
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
 
     - name: Patch SHRP vendor
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         sed -i -e 's/SHRP_BUILD_DATE/(date +%Y%m%d)/g' vendor/shrp/shrp_final.sh
 
     - name: Getting latest Magisk (Stable)
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         wget https://raw.githubusercontent.com/thongass000/android_recovery_samsung_a9y18qlte/patches/magisk.sh
         chmod a+x magisk.sh && bash magisk.sh ${{ github.event.inputs.RECOVERY_NAME }}
 
@@ -136,7 +134,7 @@ jobs:
     - name: Building
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
         source build/envsetup.sh

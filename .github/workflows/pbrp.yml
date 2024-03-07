@@ -96,18 +96,18 @@ jobs:
     - name: Clone Samsung hardware repo
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-16.0 ./hardware/samsung
 
     - name: Clone device
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         git clone ${{ github.event.inputs.DEVICE_URL }} -b ${{ github.event.inputs.DEVICE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
 
     - name : Patch device tree
       run: |
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         cd ${{ github.event.inputs.DEVICE_PATH }}
         sed -i -e 's/vendor\/omni/vendor\/pb/g' omni_a9y18qlte.mk
         sed -i '/gsm.mk/d' omni_a9y18qlte.mk
@@ -119,7 +119,7 @@ jobs:
     - name: Building
       run: |
         PATH=~/bin:$PATH
-        cd ${{ steps.pwd.outputs.pwd }}
+        cd workspace
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
         source build/envsetup.sh
