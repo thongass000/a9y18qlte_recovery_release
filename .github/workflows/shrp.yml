@@ -55,7 +55,7 @@ jobs:
 
     - name: Get current date
       run: |
-        echo "{name}={$(date +%Y-%m-%d)}" >> $GITHUB_OUTPUT
+        echo "{today}={$(date "+%Y-%m-%d")}" >> $GITHUB_OUTPUT
       id: date
 
     - name: Get build machine info
@@ -143,8 +143,9 @@ jobs:
           workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/recovery.img
           workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.tar
           workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
-        name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.date }}
-        tag_name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.date }}
-        body: ${{ github.event.inputs.RECOVERY_NAME }} recovery for ${{ github.event.inputs.DEVICE_NAME }}, built on ${{ steps.date.outputs.date }}
+        name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.today }}
+        tag_name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.today }}
+        body: ${{ github.event.inputs.RECOVERY_NAME }} recovery for ${{ github.event.inputs.DEVICE_NAME }}, built on ${{ steps.date.outputs.today }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TODAY: ${{ steps.date.outputs.today }}
