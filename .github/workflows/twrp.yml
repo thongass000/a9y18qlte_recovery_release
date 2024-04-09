@@ -56,7 +56,6 @@ jobs:
     - name: Get current date
       run: |
         echo "{today}={$(date "+%Y-%m-%d")}" >> "$GITHUB_ENV"
-      id: date
 
     - name: Prepare environment
       run: |
@@ -118,7 +117,7 @@ jobs:
         make clean
         make recoveryimage -j$(nproc --all)
         echo -e "-- Creating Odin flashable recovery tar (recovery.tar) ... "
-        tar -C $outdir -H ustar -c recovery.img > $outdir/TWRP-Unofficial-${{ steps.date.outputs.date }}.tar
+        tar -C $outdir -H ustar -c recovery.img > $outdir/TWRP-Unofficial-${{ env.today }} .tar
       env:
         outdir: out/target/product/${{ github.event.inputs.DEVICE_NAME }}
 
@@ -129,8 +128,8 @@ jobs:
           workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/recovery.img
           workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.tar
           workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
-        name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-"$today"
-        tag_name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-"$today"
-        body: ${{ github.event.inputs.RECOVERY_NAME }} recovery for ${{ github.event.inputs.DEVICE_NAME }}, built on "$today"
+        name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ env.today }} 
+        tag_name: ${{ github.event.inputs.RECOVERY_NAME }}-${{ github.event.inputs.DEVICE_NAME }}-${{ env.today }} 
+        body: ${{ github.event.inputs.RECOVERY_NAME }} recovery for ${{ github.event.inputs.DEVICE_NAME }}, built on ${{ env.today }} 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
