@@ -31,7 +31,7 @@ on:
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Check Out
@@ -118,7 +118,7 @@ jobs:
 
     - name: Installing python2 for legacy builds
       run: |
-        sudo apt-get install python2 python-is-python2
+        sudo apt-get install python2
 
     - name: Building
       run: |
