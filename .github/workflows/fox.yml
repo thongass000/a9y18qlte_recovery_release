@@ -85,8 +85,8 @@ jobs:
         PATH=~/bin:$PATH
         cd workspace
         mkdir OrangeFox_sync
-        git clone https://gitlab.com/OrangeFox/sync.git OrangeFox_sync
-        ./OrangeFox_sync/sync/legacy/orangefox_sync_legacy.sh --branch 9.0 --path .
+        git clone https://github.com/hopez13/sync.git OrangeFox_sync
+        ./OrangeFox_sync/legacy/orangefox_sync_legacy.sh --branch 9.0 --path .
         cd workspace
         ls -al
 
